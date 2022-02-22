@@ -1,83 +1,61 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
+  <div class="home">
+    <!-- Hero -->
+    <Hero />
+
+    <!-- Movie -->
+    <div class="container movies">
+      <div id="movie-grid" class="movie-grid">
+        <div class="movie" v-for="(movie, index) in movies" :key="index">
+          <div class="movie-img">
+            <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="" />
+            <p class="review">{{movie.vote_average}}</p>
+             <p class="overview">{{movie.overview}}</p>
           </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+          <div class="info">
+            <p class="title">{{movie.title.slice(0, 25) }}  
+              <span v-if="movie.title.length > 25">...</span></p>
+              <p class="release">
+                Released:
+                {{
+                  new Date(movie.release_date).toLocaleString('en-us', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })
+                }}
+              </p>
+              <NuxtLink class="button button-light" :to="{name: 'movies-movieid', params: {movieid : movie.id }}">
+                Get More Infor</NuxtLink>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
-  name: 'IndexPage'
+  name: 'IndexPage',
+  data() {
+    return {
+      movies: [],
+    }
+  },
+  async fetch() {
+    await this.getMovies()
+  },
+  methods: {
+    async getMovies() {
+      const data = axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=a0ce25f0eb352ed7b34147610c5f48e3&language=en-US&page=1`)
+      const result = await data
+      result.data.results.forEach((movie) => {
+        this.movies.push(movie)
+      })
+      console.log(this.movies)
+    },
+    
+  }
 }
 </script>

@@ -65,6 +65,11 @@ export default {
           icon: 'mdi-chart-bubble',
           title: 'Movies',
           to: '/inspire'
+        },
+        {
+          icon: 'mdi-apps',
+          title: 'About',
+          to: '/about'
         }
       ],
       miniVariant: false,
